@@ -1,0 +1,38 @@
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
+
+#define RELAY_PIN 13  // GPIO for relay module
+
+RF24 radio(4, 5);  // CE, CSN pins
+const byte address[6] = "00001";  
+
+void setup() {
+    Serial.begin(115200);
+    pinMode(RELAY_PIN, OUTPUT);
+    digitalWrite(RELAY_PIN, HIGH);  // Initially turn off the pump
+    radio.begin();
+    radio.openReadingPipe(0, address);
+    radio.setPALevel(RF24_PA_LOW);
+    radio.startListening();
+}
+
+void loop() {
+    if (radio.available()) {
+        int moistureLevel = 0;
+        radio.read(&moistureLevel, sizeof(moistureLevel));  
+
+        Serial.print("Received Moisture Level: ");
+        Serial.print(moistureLevel);
+        Serial.println("%");
+
+        if (moistureLevel < 30) {  
+            Serial.println("Soil is dry. Turning ON the pump.");
+            digitalWrite(RELAY_PIN, LOW);  // Activate the relay
+        } else {
+            Serial.println("Soil is moist. Turning OFF the pump.");
+            digitalWrite(RELAY_PIN, HIGH);  // Deactivate the relay
+        }
+    }
+    delay(500);
+}
