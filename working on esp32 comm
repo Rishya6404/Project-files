@@ -1,0 +1,4 @@
+How ESP32 PROJECT Works:
+The Transmitter ESP32 reads soil moisture data from the sensor and sends it wirelessly using nRF24L01.
+The Receiver ESP32 receives the data, displays it in the Serial Monitor, and controls the water pump relay based on the moisture level.
+If moisture is below 30%, the pump turns ON; if it's above 30%, the pump turns OFF
